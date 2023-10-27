@@ -1,3 +1,4 @@
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
@@ -18,9 +19,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Пароли не совпадают')
         if not attrs['first_name'].istitle():
             raise serializers.ValidationError('Имена начинаются с большой буквы')
+        return attrs
 
-
-    def validate_password(self, value):
+    def validated_password(self, value):
         try:
             validate_password(value)
         except serializers.ValidationError as error:
@@ -28,13 +29,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
         return value
 
-
     def create(self, validated_data):
         user = User.objects.create(**validated_data)
         user.set_password(validated_data['password'])
         user.save()
         return user
-
 
 
 
