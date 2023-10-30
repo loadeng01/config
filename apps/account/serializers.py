@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from django.contrib.auth.models import User
@@ -34,6 +35,34 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=120)
+    password = serializers.CharField(max_length=150)
+
+    def validate(self, attrs):
+        request = self.context.get('request')
+        username = attrs.get('username')
+        password = attrs.get('password')
+        if password and username:
+            user = authenticate(
+                username=username,
+                password=password,
+                request=request
+            )
+            if not user:
+                raise serializers.ValidationError('Wrong username or password')
+        else:
+            raise serializers.ValidationError('This field is Required')
+
+        attrs['user'] = user
+        return attrs
+
+    def validate_username(self, username):
+        if not User.objects.filter(username=username).exists():
+            raise serializers.ValidationError('User not found')
+        return username
 
 
 
