@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
 from . import serializers
@@ -32,6 +33,13 @@ class LoginView(ObtainAuthToken):
         return Response(response_data)
 
 
+class LogOutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        Token.objects.filter(user=user).delete()
+        return Response('You log out from account')
 
 
 
