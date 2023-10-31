@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from ..category.models import Category
 
 # Create your models here.
 User = get_user_model()
@@ -9,7 +10,8 @@ class Post(models.Model):
     title = models.CharField(max_length=255, unique=True)
     body = models.TextField(blank=True)
     owner = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
-    category = ...
+    category = models.ForeignKey(Category, related_name='posts',
+                                 on_delete=models.SET_NULL, null=True)
     preview = models.ImageField(upload_to='images/', null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
