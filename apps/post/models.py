@@ -18,7 +18,7 @@ class Post(models.Model):
         return f'{self.owner} --> {self.title[:30]}'
 
     class Meta:
-        ordering = ('created_at')
+        ordering = ('created_at',)
         verbose_name = 'Post'
         verbose_name_plural = 'Posts'
 
