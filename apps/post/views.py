@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework import permissions
 from .models import Post
-from .serializers import PostListSerializer
+from .serializers import PostListSerializer, PostCreateSerializer
 
 
 class PostListCreateView(generics.ListCreateAPIView):
@@ -9,10 +9,13 @@ class PostListCreateView(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     serializer_class = PostListSerializer
 
-    # def get_serializer_class(self):
-    #     if self.request.method == 'GET':
-    #         return  PostListSerializer
-    #     return PostCreateSerializer
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return  PostListSerializer
+        return PostCreateSerializer
 
 
 
