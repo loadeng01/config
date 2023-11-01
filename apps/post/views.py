@@ -14,7 +14,7 @@ class PostListCreateView(generics.ListCreateAPIView):
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
-            return  PostListSerializer
+            return PostListSerializer
         return PostCreateSerializer
 
 
