@@ -34,3 +34,12 @@ class PostCreateSerializer(serializers.ModelSerializer):
         return post
 
 
+class PostDetailSerializer(serializers.ModelSerializer):
+    owner_username = serializers.ReadOnlyField(source='owner.username')
+    category_name = serializers.ReadOnlyField(source='category.name')
+    images = PostImageSerializer(many=True)
+
+    class Meta:
+        model = Post
+        fields = '__all__'
+
