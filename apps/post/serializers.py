@@ -15,12 +15,13 @@ class PostListSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         repr = super().to_representation(instance)
         likes = instance.likes.filter(is_liked=True)
+
+        # if likes:
+        #     repr['children'] = LikeSerializer(likes, many=True).data
+        repr['likes count'] = len(likes)
+
         comments = instance.comments.all()
         serializer = CommentSerializer(comments, many=True)
-
-        if likes:
-            repr['children'] = LikeSerializer(likes, many=True).data
-        repr['likes count'] = len(likes)
 
         if comments:
             repr['comments'] = serializer.data
