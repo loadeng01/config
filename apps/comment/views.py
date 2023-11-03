@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, permissions
 
 from apps.comment.models import Comment
+from apps.post.permissions import IsAuthorOrAdminOrPostOwner
 from serializers import CommentSerializer
 
 
@@ -20,4 +21,5 @@ class CommentDetailView(generics.RetrieveDestroyAPIView):
     def get_permissions(self):
         if self.request.method == 'DELETE':
             return IsAuthorOrAdminOrPostOwner(),
+        return permissions.AllowAny(),
 
