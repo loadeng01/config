@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import Post, PostImages
 from ..category.models import Category
+from apps.feedback.serializers import LikeSerializer
+from apps.comment.serializers import CommentSerializer
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -9,6 +11,20 @@ class PostListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'title', 'owner', 'category_name', 'preview')
+
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        likes = instance.likes.filter(is_liked=True)
+        comments = instance.comments.all()
+        serializer = CommentSerializer(comments, many=True)
+
+        if likes:
+            repr['children'] = LikeSerializer(likes, many=True).data
+        repr['likes count'] = len(likes)
+
+        if comments:
+            repr['comments'] = serializer.data
+        return repr
 
 
 class PostImageSerializer(serializers.ModelSerializer):

@@ -20,6 +20,7 @@ urlpatterns = [
     path('api/category/', include('apps.category.urls')),
     path('api/post/', include('apps.post.urls')),
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('api/comment/', include('apps.comment.urls'))
 
 ]
 

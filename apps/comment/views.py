@@ -3,7 +3,7 @@ from rest_framework import generics, permissions
 
 from apps.comment.models import Comment
 from apps.post.permissions import IsAuthorOrAdminOrPostOwner
-from serializers import CommentSerializer
+from .serializers import CommentSerializer
 
 
 class CommentCreateView(generics.CreateAPIView):
@@ -11,7 +11,7 @@ class CommentCreateView(generics.CreateAPIView):
     permission_classes = permissions.IsAuthenticated,
 
     def perform_create(self, serializer):
-        return serializer(owner=self.request.user)
+        return serializer.save(owner=self.request.user)
 
 
 class CommentDetailView(generics.RetrieveDestroyAPIView):
