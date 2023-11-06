@@ -46,12 +46,9 @@ from .permissions import IsAuthorOrAdmin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
-
 from ..comment.models import Comment
 from ..comment.serializers import CommentSerializer
-
 from ..feedback.models import Like
-from ..feedback.serializers import LikeSerializer
 
 
 class StandartPagination(PageNumberPagination):
@@ -95,7 +92,6 @@ class PostViewSet(ModelViewSet):
         if like.is_liked:
             return Response('Liked', status=200)
         return Response('Unliked', status=200)
-
 
     @action(['GET', 'POST', 'DELETE'], detail=True)
     def comments(self, request, pk, comment_id=None):
