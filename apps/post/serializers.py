@@ -12,15 +12,23 @@ class PostListSerializer(serializers.ModelSerializer):
         model = Post
         fields = ('id', 'title', 'owner', 'category_name', 'preview')
 
+    @staticmethod
+    def is_liked(post, user):
+        return user.likes.filter(post=post).exists()
+
+    @staticmethod
+    def is_favorite(post, user):
+        return user.favorites.filter(post=post).exists()
+
     def to_representation(self, instance):
         repr = super().to_representation(instance)
-        likes = instance.likes.filter(is_liked=True)
-        comments = instance.comments.all()
-        serializer = CommentSerializer(comments, many=True)
+        repr['likes count'] = instance.likes.count()
 
-        repr['likes count'] = len(likes)
-        if comments:
-            repr['comments'] = serializer.data
+        user = self.context['request'].user
+        if user.is_authenticated:
+            repr['is_liked'] = self.is_liked(instance, user)
+            repr['is_favorite'] = self.is_favorite(instance, user)
+
         return repr
 
 
@@ -55,4 +63,30 @@ class PostDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = '__all__'
+
+    @staticmethod
+    def is_liked(post, user):
+        return user.likes.filter(post=post).exists()
+
+    @staticmethod
+    def is_favorite(post, user):
+        return user.favorites.filter(post=post).exists()
+
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        repr['comments_count'] = instance.comments.count()
+        repr['comments'] = CommentSerializer(instance=instance.comments.all(), many=True).data
+        repr['likes count'] = instance.likes.count()
+
+        user = self.context['request'].user
+        if user.is_authenticated:
+            repr['is_liked'] = self.is_liked(instance, user)
+            repr['is_favorite'] = self.is_favorite(instance, user)
+
+        return repr
+
+
+
+
+
 

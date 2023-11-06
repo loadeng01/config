@@ -65,6 +65,12 @@ class LoginSerializer(serializers.Serializer):
         return username
 
 
+class UserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        exclude = ('password',)
+
+
 
 
 

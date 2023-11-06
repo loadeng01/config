@@ -46,9 +46,12 @@ from .permissions import IsAuthorOrAdmin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
+
+from ..account.serializers import UserListSerializer
 from ..comment.models import Comment
 from ..comment.serializers import CommentSerializer
-from ..feedback.models import Like
+from ..feedback.models import Like, Favorites
+from django.contrib.auth.models import User
 
 
 class StandartPagination(PageNumberPagination):
@@ -129,5 +132,29 @@ class PostViewSet(ModelViewSet):
                 comment.delete()
                 return Response('Comment successfully deleted', status=204)
             return Response('Invalid comment_id', status=404)
+
+    @action(['POST', 'DELETE', 'GET'], detail=True)
+    def favorites(self, request, pk):
+        post = self.get_object()
+        user = request.user
+
+        if request.method == 'POST':
+            if user.favorites.filter(post=post).exists():
+                return Response('This post is already in favorites', status=400)
+            Favorites.objects.create(owner=user, post=post)
+            return Response('Added to favorites', status=201)
+
+        elif request.method == 'GET':
+            users = post.favorites.all().values('owner')
+            favorites_users = User.objects.filter(id__in=users)
+            serializer = UserListSerializer(favorites_users, many=True)
+            return Response(serializer.data)
+
+        else:
+            favorite = user.favorites.filter(post=post)
+            if favorite.exists():
+                favorite.delete()
+                return Response('Deleted', status=204)
+            return Response('Post not found', status=404)
 
 

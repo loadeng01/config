@@ -10,3 +10,15 @@ class Like(models.Model):
 
     def __str__(self):
         return f'{self.is_liked} --> {self.post}'
+
+
+class Favorites(models.Model):
+    owner = models.ForeignKey('auth.user', related_name='favorites', on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, related_name='favorites', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('owner', 'post')
+
+
+
+
